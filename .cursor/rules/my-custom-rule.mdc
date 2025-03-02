@@ -1,0 +1,361 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 🖱️ Cursor AI Guidelines for DevFlow Development
+
+## 📋 Overview
+
+These guidelines establish a framework for effectively using Cursor AI when developing the DevFlow Next.js 15 application. By following these rules, you'll maintain ownership of your learning journey while leveraging AI to enhance productivity.
+
+## 🔄 Project Structure Awareness
+
+Based on the actual repository structure:
+
+```
+.
+├── app/                    # Next.js 15 App Router directory
+│   ├── (auth)/             # Authentication routes (grouped)
+│   ├── (root)/             # Main application routes
+│   └── api/                # API endpoints
+├── components/             # React components
+├── constants/              # Application constants and config
+├── context/                # React Context providers
+├── database/               # Database configuration and models
+├── hooks/                  # Custom React hooks
+├── lib/                    # Utility functions
+├── public/                 # Static assets
+├── types/                  # TypeScript type definitions
+├── auth.ts                 # Clerk authentication setup
+├── middleware.ts           # Next.js middleware for route protection
+└── next.config.ts          # Next.js configuration
+```
+
+When using Cursor AI, always respect this structure by:
+
+1. Placing new files in the correct directories
+2. Following existing naming conventions
+3. Adhering to established import patterns
+4. Maintaining separation of concerns
+
+## 🧠 Development Approach
+
+### 1. Understanding Before Implementation
+
+```typescript
+// WORKFLOW PATTERN
+interface DevelopmentSequence {
+  steps: [
+    "Study course video for the feature",
+    "Examine existing patterns in codebase",
+    "Understand Next.js concepts involved",
+    "Plan implementation approach",
+    "Use Cursor AI for guidance",
+    "Implement solution",
+    "Review and refine"
+  ]
+}
+```
+
+### 2. Clear AI Assistance Boundaries
+
+#### ✅ DO Use Cursor For:
+
+```javascript
+// Appropriate AI utilization
+const effectiveCursorTasks = [
+  "Generating component structures following established patterns",
+  "Creating TypeScript interfaces for MongoDB schemas",
+  "Converting between Server/Client components",
+  "Debugging runtime errors",
+  "Setting up Zod validation schemas",
+  "Implementing Tailwind CSS styling",
+  "Optimizing MongoDB queries"
+];
+```
+
+#### ❌ DON'T Use Cursor For:
+
+```javascript
+// Maintain development ownership
+const developmentResponsibilities = [
+  "Overall application architecture decisions",
+  "Core business logic implementation",
+  "Database schema design decisions",
+  "Authentication flow implementation",
+  "Understanding key Next.js concepts"
+];
+```
+
+## 🏗️ Implementation Guidelines
+
+### 1. Next.js App Router Structure
+
+```typescript
+// When adding new routes, follow this pattern
+interface RouteImplementation {
+  directory: "app/(root)/[route-name]" | "app/(auth)/[route-name]";
+  files: {
+    page: "page.tsx";           // Main page component (Server Component)
+    loading: "loading.tsx";      // Loading state UI
+    error: "error.tsx";          // Error handling
+    layout: "layout.tsx";        // Optional layout if needed
+  };
+  fileType: "Server Component" | "Client Component";
+}
+```
+
+### 2. Server vs. Client Components
+
+```tsx
+// DEFAULT: Server Components for data fetching
+// Example location: app/(root)/questions/[id]/page.tsx
+import QuestionDetails from '@/components/question/QuestionDetails';
+import AnswerForm from '@/components/forms/AnswerForm';
+import { getQuestionById } from '@/lib/actions/question.actions';
+
+export default async function QuestionPage({ params }) {
+  // Server-side data fetching
+  const question = await getQuestionById(params.id);
+  
+  return (
+    <div className="question-container">
+      <QuestionDetails question={question} />
+      <AnswerForm questionId={params.id} /> {/* Client Component */}
+    </div>
+  );
+}
+
+// WHEN NEEDED: Client Components for interactivity
+// Example location: components/forms/AnswerForm.tsx
+"use client";
+
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AnswerSchema } from '@/lib/validations';
+import { createAnswer } from '@/lib/actions/answer.actions';
+
+export default function AnswerForm({ questionId }) {
+  // Interactive state that requires client-side execution
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form implementation
+  // ...
+}
+```
+
+### 3. Data Fetching Approaches
+
+Based on the repository structure, respect these patterns:
+
+```typescript
+// Data fetching priorities
+const dataFetchingHierarchy = [
+  {
+    approach: "Server Component Direct Fetch",
+    location: "app/(root)/[route]/page.tsx",
+    usage: "Initial page data loading",
+    example: "const questions = await getQuestions();"
+  },
+  {
+    approach: "Server Actions",
+    location: "lib/actions/[resource].actions.ts",
+    usage: "Data mutations and form submissions",
+    example: "export async function createQuestion(data) { 'use server'; ... }"
+  },
+  {
+    approach: "API Routes",
+    location: "app/api/[route]/route.ts",
+    usage: "External API needs, webhooks",
+    example: "export async function POST(req) { ... }"
+  },
+  {
+    approach: "Client-side Fetching",
+    location: "components/[feature]/ClientComponent.tsx",
+    usage: "Real-time updates, user-specific content",
+    example: "const { data } = useSWR('/api/user-activity', fetcher);"
+  }
+];
+```
+
+### 4. Form Implementation Pattern
+
+Follow the established pattern for forms:
+
+```tsx
+// Form implementation pattern with React Hook Form + Zod
+// Location: components/forms/[FormName].tsx
+"use client";
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { FormSchema } from '@/lib/validations';
+import { formAction } from '@/lib/actions/resource.actions';
+
+export default function CustomForm() {
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      field1: '',
+      field2: '',
+      // ...
+    }
+  });
+
+  async function onSubmit(values) {
+    try {
+      // Call server action
+      await formAction(values);
+      // Handle success
+    } catch (error) {
+      // Handle error
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Form fields */}
+      </form>
+    </Form>
+  );
+}
+```
+
+### 5. MongoDB Schema Implementation
+
+Follow the repository pattern for Mongoose schemas:
+
+```tsx
+// Location: database/models/[resource].model.ts
+import { Schema, models, model, Document } from 'mongoose';
+
+export interface IResource extends Document {
+  field1: string;
+  field2: number;
+  field3: Schema.Types.ObjectId[];
+  // ...
+}
+
+const ResourceSchema = new Schema<IResource>({
+  field1: { type: String, required: true },
+  field2: { type: Number, default: 0 },
+  field3: [{ type: Schema.Types.ObjectId, ref: 'RelatedModel' }],
+  // ...
+  createdAt: { type: Date, default: Date.now }
+});
+
+// Prevent duplicate model creation during hot reload
+const Resource = models.Resource || model<IResource>('Resource', ResourceSchema);
+export default Resource;
+```
+
+## 💻 Effective Cursor Prompting Techniques
+
+### 1. Structured Prompt Framework
+
+```
+Context: [What you're building and which part of the DevFlow app]
+Request: [Specific implementation needs]
+Constraints: [Project patterns to follow]
+Knowledge: [Your current understanding]
+```
+
+### 2. Examples: Bad vs. Good Prompts
+
+❌ **Ineffective Prompt:**
+```
+"Write code for a question form"
+```
+
+✅ **Effective Prompt:**
+```
+"I'm implementing the question creation form for DevFlow following the project's established patterns. 
+
+I need:
+1. A client component using React Hook Form and Zod validation
+2. Integration with the createQuestion server action in lib/actions/question.actions.ts
+3. Fields for title, content, and tags with proper validation
+4. Responsive styling with Tailwind CSS
+
+I've already created the QuestionSchema in lib/validations.ts and I understand the basic setup, but I'm unsure how to implement the tag selection functionality."
+```
+
+### 3. Iterative Development Pattern
+
+Rather than asking for complete implementations, build iteratively:
+
+1. **Framework First**
+   ```
+   "Show me the basic structure for a question form component that follows the project patterns"
+   ```
+
+2. **Form Logic**
+   ```
+   "Now help me implement the form validation and submission logic"
+   ```
+
+3. **UI Enhancement**
+   ```
+   "How should I implement the tag selection UI with Tailwind CSS?"
+   ```
+
+4. **Error Handling**
+   ```
+   "What's the best way to handle and display form submission errors?"
+   ```
+
+## 🔍 Learning-Enhancement Strategies
+
+### 1. Study-Implement-Review Cycle
+
+1. **Study Phase**
+   - Watch Adrian's course videos completely
+   - Review Next.js documentation for concepts
+   - Examine repository structure
+
+2. **Implementation Phase**
+   - Try implementing features yourself first
+   - Use Cursor for guidance on specific aspects
+   - Follow established project patterns
+
+3. **Review Phase**
+   - Compare your solution with course implementation
+   - Understand differences in approach
+   - Document key learning points
+
+### 2. Knowledge-Building Questions
+
+When using Cursor, ask these types of questions to build understanding:
+
+```
+"Why is this component a Server Component rather than a Client Component?"
+"What are the benefits of this MongoDB schema structure?"
+"How does the Authentication middleware protect these routes?"
+"What's the performance impact of this data fetching approach?"
+"How would this implementation change if we needed to add [new feature]?"
+```
+
+### 3. Self-Assessment
+
+Regularly ask yourself:
+
+1. Can you explain the architecture decisions in the codebase?
+2. Could you implement similar features independently?
+3. Do you understand the tradeoffs of different approaches?
+4. Are you becoming less dependent on AI assistance over time?
+
+## 🚀 Final Guidelines
+
+- **Study repository structure** before implementing new features
+- **Understand Adrian's approach** from the course videos
+- **Use Cursor as a learning accelerator**, not a replacement for understanding
+- **Progressively reduce dependency** on AI as your expertise grows
+- **Apply patterns yourself** to demonstrate genuine mastery
+
+Remember: The goal is to build both a high-quality application AND your Next.js expertise. Cursor should enhance your capabilities, not replace your understanding of the underlying technologies and patterns.
